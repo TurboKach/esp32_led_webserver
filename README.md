@@ -1,5 +1,5 @@
 # esp32_led_webserver
-ESP32 Web server for RGBW led strip control with color picker
+MicroPython ESP32 Web server for RGBW led strip control with color picker.
 
 Hardware:
  - [ESP32-DevKit v1](https://www.espressif.com/en/products/devkits/esp32-devkitc/overview)
@@ -7,3 +7,8 @@ Hardware:
  
  Software:
   - [esptool](https://github.com/espressif/esptool/)
+
+Project architecture (read [MicroPython doc](http://docs.micropython.org/en/latest/esp32/quickref.html) for more):
+ - [boot.py](https://github.com/TurboKach/esp32_led_webserver/blob/master/boot.py) - script is executed first (if it exists) 
+ - [main.py](https://github.com/TurboKach/esp32_led_webserver/blob/master/main.py) - main script.  
+ You can create these files yourself and populate them with the code that you want to run when the device starts up.
