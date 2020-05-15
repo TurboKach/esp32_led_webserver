@@ -8,7 +8,7 @@ except:
 from machine import Pin, freq
 import network
 
-freq(160*1000000)
+freq(160*10**6) # 160 MHz Frequency
 
 import esp
 
@@ -22,13 +22,13 @@ gc.collect()
 
 from neopixel import NeoPixel
 
-WIFI_SSID = "RT-WiFi-0C8B"
-WIFI_PWD = "2829001335"
+WIFI_SSID = "YOUR_WIFI_SSID"
+WIFI_PWD = "YOUR_WIFI_PASSWORD"
 
-led = Pin(2, Pin.OUT)
+led = Pin(2, Pin.OUT) # blue led on your esp32
 led.value(1)
 
-LED_PIN = Pin(5, Pin.OUT)
-led_strip_len = 430
+LED_PIN = Pin(5, Pin.OUT) # pin connected to your LED strip
+led_strip_len = 430 # amount of LEDs on your strip
 
 led_strip = NeoPixel(LED_PIN, led_strip_len)
