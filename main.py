@@ -1,3 +1,7 @@
+"""
+Note that some variables used in this file are defined in boot.py
+and both this files are read by ESP32 as one
+"""
 def strip_clear(strip):
   for i in range(led_strip_len):
     led_strip[i] = (0, 0, 0, 0)
@@ -22,11 +26,11 @@ def wifi_connect(wifi_ssid, wifi_pwd):
 
   
 def get_freq():
-  print("Frequency: " + str(int(freq())/1000000) + " MHz")
+  print("Frequency: " + str(int(freq())/10*10**6) + " MHz")
  
 def get_mcu_temp():
   temp_c = round((esp32.raw_temperature()-32)/1.8, 1)
-  print("MCU temp: " + str(temp_c) + " 掳C")  
+  print("MCU temp: " + str(temp_c) + " °C")  
   
 def wheel(pos): 
   '''Input a value 0 to 255 to get a color value.
