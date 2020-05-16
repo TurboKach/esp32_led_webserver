@@ -24,11 +24,11 @@ from neopixel import NeoPixel
 WIFI_SSID = "YOUR_WIFI_SSID"
 WIFI_PWD = "YOUR_WIFI_PASSWORD"
 
-led = Pin(2, Pin.OUT)
-led.value(1)
+led = Pin(2, Pin.OUT) # blue led on your ESP32 board
+led.value(1) # turn in on
 
-LED_PIN = Pin(5, Pin.OUT)
-led_strip_len = 430
+LED_PIN = Pin(5, Pin.OUT) # pin which your LED data wire connected to
+led_strip_len = 430 # amount of LEDs on your strip 
 
 # no one explains it but I will:
 # bpp means bytes per pixel
