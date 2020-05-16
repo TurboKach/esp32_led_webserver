@@ -32,4 +32,5 @@ LED_STRIP_LEN = 430  # amount of LEDs on your strip
 # no one explains it but I will:
 # bpp means bytes per pixel
 # this value describes how many colors your LED strip have
+# example: RGB bpp=3, RGBW/RGBY bpp=4
 led_strip = NeoPixel(LED_PIN, LED_STRIP_LEN, bpp=4)
