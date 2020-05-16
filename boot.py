@@ -1,4 +1,3 @@
-
 # This file is executed on every boot (including wake-boot from deepsleep)
 try:
   import usocket as socket
@@ -8,7 +7,7 @@ except:
 from machine import Pin, freq
 import network
 
-freq(160*10**6) # 160 MHz Frequency
+freq(240*10**6) # 240 MHz Frequency
 
 import esp
 
@@ -25,10 +24,13 @@ from neopixel import NeoPixel
 WIFI_SSID = "YOUR_WIFI_SSID"
 WIFI_PWD = "YOUR_WIFI_PASSWORD"
 
-led = Pin(2, Pin.OUT) # blue led on your esp32
+led = Pin(2, Pin.OUT)
 led.value(1)
 
-LED_PIN = Pin(5, Pin.OUT) # pin connected to your LED strip
-led_strip_len = 430 # amount of LEDs on your strip
+LED_PIN = Pin(5, Pin.OUT)
+led_strip_len = 430
 
-led_strip = NeoPixel(LED_PIN, led_strip_len)
+# no one explains it but I will:
+# bpp means bytes per pixel
+# this value describes how many colors your LED strip have
+led_strip = NeoPixel(LED_PIN, led_strip_len, bpp=4)
