@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Other
+.idea
+Будет удалено .idea/.gitignore
+Будет удалено .idea/esp32_led_webserver.iml
+Будет удалено .idea/inspectionProfiles/
+Будет удалено .idea/misc.xml
+Будет удалено .idea/modules.xml
+Будет удалено .idea/vcs.xml
