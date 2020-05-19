@@ -63,27 +63,30 @@ def rainbow_cycle(wait=0):
             time.sleep_ms(wait)
 
 
-def html_index():
+def create_index_response(connection, filename='404.html', content_type='text/html'):
     if led.value() == 1:
         gpio_state = "ON"
     else:
         gpio_state = "OFF"
 
-    index = 'index.html'
-    fs = os.listdir()
-    if index not in fs:
-        error = 'Error: no ' + index + ' page template found in root dir. Found: ' + fs
+    filesystem = os.listdir()
+    if filename not in filesystem:
+        error = 'Error: No ' + filename + ' file found in root dir. Found: ' + filesystem
         print(error)
         return error
 
-    html = get_file(index)
-    html = html.format(
+    response = get_file(filename)
+    response = response.format(
         gpio_state=gpio_state,
         frequency=core_frequency_get(),
         temperature=mcu_temperature_get(),
-        dir_content=fs
+        dir_content=filesystem
     )
-    return html
+    connection.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
+    connection.send('Content-Type: ' + content_type + '\n')
+    connection.send('Connection: close\n\n')
+    connection.write(response)
+    connection.close()
 
 
 def get_file(filename):
@@ -96,13 +99,12 @@ def get_file(filename):
         return 'File not found'
 
 
-def create_response(connection, filename):
+def create_response(connection, filename='404.html', content_type='text/html'):
     response = get_file(filename)
     connection.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
-    connection.send('Content-Type: text/html\n')
+    connection.send('Content-Type: ' + content_type + '\n')
     connection.send('Connection: close\n\n')
     connection.write(response)
-    # conn.sendall(response)
     connection.close()
 
 
@@ -158,14 +160,9 @@ while True:
         led.value(1)
     # TODO add color picker function
     if request.find('GET /style.css', 2, 17) >= 0:
-        response = get_file('style.css')
-        conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
-        conn.send('Content-Type: text/css\n')
-        conn.send('Connection: close\n\n')
-        conn.write(response)
-        conn.close()
+        create_response(conn, 'style.css', 'text/css')
     elif request.find('GET /functions.js', 2, 20) >= 0:
-        create_response(conn, 'functions.js')
+        create_response(conn, 'functions.js', 'text/javascript')
     elif request.find('GET /?color=', 2, 19) >= 0:
         # TODO get colorsting into variable
         red_index = request.find('GET /?color=') + len('GET /?color=')
@@ -179,16 +176,6 @@ while True:
         print(green_val)
         print(blue_val)
         # TODO send color values to LED strip
-        response = html_index()
-        conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
-        conn.send('Content-Type: text/html\n')
-        conn.send('Connection: close\n\n')
-        conn.write(response)
-        conn.close()
+        create_index_response(conn, 'index.html', 'text/html')
     else:
-        response = html_index()
-        conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
-        conn.send('Content-Type: text/html\n')
-        conn.send('Connection: close\n\n')
-        conn.write(response)
-        conn.close()
+        create_index_response(conn, 'index.html', 'text/html')
