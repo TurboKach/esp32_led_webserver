@@ -7,8 +7,11 @@ Hardware:
  
  Software:
   - [esptool](https://github.com/espressif/esptool/)
+  - ampy
 
 Project architecture (read [MicroPython doc](http://docs.micropython.org/en/latest/esp32/quickref.html) for more):
  - [boot.py](https://github.com/TurboKach/esp32_led_webserver/blob/master/boot.py) - script is executed first (if it exists) 
  - [main.py](https://github.com/TurboKach/esp32_led_webserver/blob/master/main.py) - main script.  
- You can create these files yourself and populate them with the code that you want to run when the device starts up.
+ - index.html
+ - functions.js
+ - style.css

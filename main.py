@@ -2,7 +2,6 @@
 Note that some variables used in this file are defined in boot.py
 and both this files are read by ESP32 as one
 """
-from boot import *
 
 
 def strip_clear(strip):
@@ -28,13 +27,14 @@ def wifi_connect(wifi_ssid, wifi_pwd):
     print('network config:', wlan.ifconfig())
 
 
-def get_freq():
-    print(f'Core frequency: {frequency/10 * 10 ** 6} MHz')
+def core_frequency_get():
+    frequency = str(machine.freq()/10 ** 6)
+    return 'Core frequency: ' + frequency + ' MHz'
 
 
-def get_mcu_temp():
-    temp_c = round((esp32.raw_temperature() - 32) / 1.8, 1)
-    print(f'MCU temp: {temp_c} °C')
+def mcu_temperature_get():
+    temp_c = str(round((esp32.raw_temperature() - 32) / 1.8, 1))
+    return 'MCU temp: ' + temp_c + ' °C'
 
 
 def wheel(pos):
@@ -63,30 +63,47 @@ def rainbow_cycle(wait=0):
             time.sleep_ms(wait)
 
 
-def web_page():
+def html_index():
     if led.value() == 1:
         gpio_state = "ON"
     else:
         gpio_state = "OFF"
-    html = """<html><head> <title>ESP32 LED</title> <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:,"> <style>html{font-family: "SF Pro Display","SF Pro Icons","Helvetica Neue","Helvetica","Arial",sans-serif; display:inline-block; margin: 0px auto; text-align: center;}
-  h1{color: #000000; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #000000; border: none; 
-  border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-  .button2{background-color: #000000;}</style></head><body> <h1>ESP32 WEB SERVER</h1> 
-  <p>STATUS: <strong>""" + gpio_state + """</strong></p><p><a href="/?led=on"><button class="button">ON</button></a><a href="/?led=off"><button class="button">OFF</button></a></p><p><a href="/?led=medium"><button class="button">Medium</button></a><a href="/?led=low"><button class="button">Low</button></a></p><a href="/?led=rainbow"><button class="button">RAINBOW</button></a>
-  <p><input style="width: 100px; height: 50px;" type="color" value="#ff0000" /></p>
-  <!DOCTYPE html><html>
-<head><meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:,">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.min.js"></script>
-</head><body><div class="container"><div class="row"><h1>ESP Color Picker</h1></div>
-<a class="btn btn-primary btn-lg" href="#" id="change_color" role="button">Change Color</a> 
-<input class="jscolor {onFineChange:'update(this)'}" id="rgb"></div>
-<script>function update(picker) {document.getElementById('rgb').innerHTML = Math.round(picker.rgb[0]) + ', ' +  Math.round(picker.rgb[1]) + ', ' + Math.round(picker.rgb[2]);
-document.getElementById("change_color").href="?r" + Math.round(picker.rgb[0]) + "g" +  Math.round(picker.rgb[1]) + "b" + Math.round(picker.rgb[2]) + "&";}</script></body></html>
-"""
+
+    index = 'index.html'
+    fs = os.listdir()
+    if index not in fs:
+        error = 'Error: no ' + index + ' page template found in root dir. Found: ' + fs
+        print(error)
+        return error
+
+    html = get_file(index)
+    html = html.format(
+        gpio_state=gpio_state,
+        frequency=core_frequency_get(),
+        temperature=mcu_temperature_get(),
+        dir_content=fs
+    )
     return html
+
+
+def get_file(filename):
+    try:
+        file = open(filename)
+        html = file.read()
+        file.close()
+        return html
+    except:
+        return 'File not found'
+
+
+def create_response(connection, filename):
+    response = get_file(filename)
+    connection.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
+    connection.send('Content-Type: text/html\n')
+    connection.send('Connection: close\n\n')
+    connection.write(response)
+    # conn.sendall(response)
+    connection.close()
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -110,6 +127,7 @@ while True:
     request = conn.recv(1024)
     request = str(request)
     print('Content = %s' % request)
+
     led_on = request.find('/?led=on')
     led_off = request.find('/?led=off')
     led_rainbow = request.find('/?led=rainbow')
@@ -138,9 +156,39 @@ while True:
         print('RAINBOW MODE')
         rainbow_cycle()
         led.value(1)
-    response = web_page()
-    conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response
-    conn.send('Content-Type: text/html\n')
-    conn.send('Connection: close\n\n')
-    conn.sendall(response)
-    conn.close()
+    # TODO add color picker function
+    if request.find('GET /style.css', 2, 17) >= 0:
+        response = get_file('style.css')
+        conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
+        conn.send('Content-Type: text/css\n')
+        conn.send('Connection: close\n\n')
+        conn.write(response)
+        conn.close()
+    elif request.find('GET /functions.js', 2, 20) >= 0:
+        create_response(conn, 'functions.js')
+    elif request.find('GET /?color=', 2, 19) >= 0:
+        # TODO get colorsting into variable
+        red_index = request.find('GET /?color=') + len('GET /?color=')
+        green_index = red_index + 2
+        blue_index = green_index + 2
+        # TODO wrap this shit into functions
+        red_val = int(request[red_index:green_index], 16)
+        green_val = int(request[green_index:blue_index], 16)
+        blue_val = int(request[blue_index:blue_index+2], 16)
+        print(red_val)
+        print(green_val)
+        print(blue_val)
+        # TODO send color values to LED strip
+        response = html_index()
+        conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
+        conn.send('Content-Type: text/html\n')
+        conn.send('Connection: close\n\n')
+        conn.write(response)
+        conn.close()
+    else:
+        response = html_index()
+        conn.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
+        conn.send('Content-Type: text/html\n')
+        conn.send('Connection: close\n\n')
+        conn.write(response)
+        conn.close()

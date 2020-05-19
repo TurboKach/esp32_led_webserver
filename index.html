@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name=" viewport" content="width=device-width, initial-scale=1">
+    <title>ESP32 LED</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="functions.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.min.js"></script>
+</head>
+<body>
+<h1>ESP32 WEB SERVER</h1>
+<p>STATUS:
+    <strong>{gpio_state}</strong>
+</p>
+<p>
+    <a class="button" href="/?led=on">ON</a>
+    <a class="button" href="/?led=off">OFF</a>
+</p>
+<p><a class="button" href="/?led=medium"> Medium</a>
+    <a class="button" href="/?led=low">Low</a>
+</p>
+
+<a class="button" href="/?led=rainbow">RAINBOW</a>
+
+<p>
+    <input class="jscolor" value="ff0000" id="rgb-picker"/>
+    <a class="button" onclick="setColor()">Set</a>
+</p>
+
+
+<div class="color-info">
+    toHEXString = <span id="hex-str"></span><br />
+    toRGBString = <span id="rgb-str"></span><br />
+    R, G, B = <span id="rgb"></span><br />
+    H, S, V = <span id="hsv"></span>
+</div>
+<br>
+<div class="debug">
+    <a><strong>Debug info:</strong></a>
+    <br>
+    <a>{frequency}</a>
+    <br>
+    <a>{temperature}</a>
+    <br>
+    <a>Filesystem content:</a>
+    <br>
+    <a>{dir_content}</a>
+</div>
+</body>
+</html>
