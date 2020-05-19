@@ -7,7 +7,7 @@ Hardware:
  
  Software:
   - [esptool](https://github.com/espressif/esptool/)
-  - ampy
+  - [ampy](https://github.com/scientifichackers/ampy)
 
 Project architecture (read [MicroPython doc](http://docs.micropython.org/en/latest/esp32/quickref.html) for more):
  - [boot.py](https://github.com/TurboKach/esp32_led_webserver/blob/master/boot.py) - script is executed first (if it exists) 
