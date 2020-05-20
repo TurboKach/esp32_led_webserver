@@ -10,13 +10,15 @@ def strip_clear(strip):
     strip.write()
 
 
-def strip_fill_color(strip, red, green, blue, white):
+def strip_fill_color(strip=None, red=0, green=0, blue=0, white=0):
+    if strip is None:
+        strip = NeoPixel(LED_PIN, LED_STRIP_LEN, bpp=4)
     for i in range(LED_STRIP_LEN):
         led_strip[i] = (red, green, blue, white)
     strip.write()
 
 
-def wifi_connect(wifi_ssid, wifi_pwd):
+def wifi_connect(wifi_ssid='', wifi_pwd=''):
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     if not wlan.isconnected():
@@ -69,18 +71,12 @@ def create_index_response(connection, filename='404.html', content_type='text/ht
     else:
         gpio_state = "OFF"
 
-    filesystem = os.listdir()
-    if filename not in filesystem:
-        error = 'Error: No ' + filename + ' file found in root dir. Found: ' + filesystem
-        print(error)
-        return error
-
     response = get_file(filename)
     response = response.format(
         gpio_state=gpio_state,
         frequency=core_frequency_get(),
         temperature=mcu_temperature_get(),
-        dir_content=filesystem
+        dir_content=os.listdir()
     )
     connection.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
     connection.send('Content-Type: ' + content_type + '\n')
@@ -91,12 +87,17 @@ def create_index_response(connection, filename='404.html', content_type='text/ht
 
 def get_file(filename):
     try:
+        filesystem = os.listdir()
+        if filename not in filesystem:
+            error = 'Error: ' + filename + ' file not found in root dir. Found: ' + filesystem
+            print(error)
+            return error
         file = open(filename)
-        html = file.read()
+        f = file.read()
         file.close()
-        return html
-    except:
-        return 'File not found'
+        return f
+    except Exception as e:
+        return e
 
 
 def create_response(connection, filename='404.html', content_type='text/html'):
@@ -175,7 +176,9 @@ while True:
         print(red_val)
         print(green_val)
         print(blue_val)
-        # TODO send color values to LED strip
+
+        strip_fill_color(led_strip, red_val, green_val, blue_val)
+
         create_index_response(conn, 'index.html', 'text/html')
     else:
         create_index_response(conn, 'index.html', 'text/html')
