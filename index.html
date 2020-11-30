@@ -15,11 +15,11 @@
     <strong>{gpio_state}</strong>
 </p>
 <p>
-    <a class="button" href="/?led=on">ON</a>
-    <a class="button" href="/?led=off">OFF</a>
+    <a class="button" onclick="setColor('ff')">ON</a>
+    <a class="button" onclick="setColor('00')">OFF</a>
 </p>
-<p><a class="button" href="/?led=medium"> Medium</a>
-    <a class="button" href="/?led=low">Low</a>
+<p><a class="button" onclick="setColor('96')">Medium</a>
+    <a class="button" onclick="setColor('32')">Low</a>
 </p>
 
 <a class="button" href="/?led=rainbow">RAINBOW</a>

@@ -15,3 +15,19 @@ Project architecture (read [MicroPython doc](http://docs.micropython.org/en/late
  - index.html
  - functions.js
  - style.css
+ 
+ ####Step-by-step guide
+ 0. You might need to install [CP210x USB to UART bridge driver](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
+1. Get the latest stable MicroPython [firmware](https://micropython.org/download/esp32/)  or take mine
+2. Install [esptool](https://github.com/espressif/esptool)
+3. Erase flash with esptool: `esptool.py --port /dev/tty.usbserial-0001 erase_flash`  
+4. Deploy firmware : `esptool.py --chip esp32 --port /dev/tty.usbserial-0001 write_flash -z 0x1000 esp32-idf3-20200902-v1.13.bin
+`  
+5. Load project files to the board using [ampy](https://github.com/scientifichackers/ampy) (from project directory):  
+`ampy -p /dev/tty.usbserial-0001 put boot.py boot.py`  
+`ampy -p /dev/tty.usbserial-0001 put main.py main.py`  
+`ampy -p /dev/tty.usbserial-0001 put index.html index.html`  
+`ampy -p /dev/tty.usbserial-0001 put functions.js functions.js`  
+`ampy -p /dev/tty.usbserial-0001 put style.css style.css`  
+6. Check it works by visiting ESP32 IP address  
+7. **TO BE CONTINUED**
