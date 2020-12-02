@@ -16,7 +16,10 @@ import time  # check necessarity on boot
 import machine
 from neopixel import NeoPixel
 
-machine.freq(240*10**6)  # 240 MHz Frequency
+
+MHZ = 10**6
+FREQUENCY = 240 * MHZ
+machine.freq(FREQUENCY)  # 240 MHz Frequency
 
 esp.osdebug(None)
 
