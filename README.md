@@ -5,7 +5,7 @@ Hardware:
  - [ESP32-DevKit v1](https://www.espressif.com/en/products/devkits/esp32-devkitc/overview)
  - [RGBW LED strip](https://aliexpress.ru/item/32476317187.html)
  
- Software:
+Software:
   - [esptool](https://github.com/espressif/esptool/)
   - [ampy](https://github.com/scientifichackers/ampy)
 
@@ -16,7 +16,7 @@ Project architecture (read [MicroPython doc](http://docs.micropython.org/en/late
  - functions.js
  - style.css
  
- ####Step-by-step guide  
+Step-by-step guide  
 
 1. You might need to install [CP210x USB to UART bridge driver](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
 2. Get the latest stable MicroPython [firmware](https://micropython.org/download/esp32/)  or take mine
