@@ -31,3 +31,7 @@ Step-by-step guide
 `ampy -p /dev/cu.usbserial-0001 put style.css`  
 7. Check it works by visiting ESP32 IP address  
 8. **TO BE CONTINUED**
+
+# TODO
+1. put all other files into separate folder for easier flash writing
+2. 

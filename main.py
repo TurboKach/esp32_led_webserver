@@ -178,7 +178,7 @@ def setup():
     :return: None
     """
     strip_clear(led_strip)
-    wifi_connect(WIFI_SSID, WIFI_PWD)
+    wifi_connect(WIFI_SSID, WIFI_PWD) # this files defined at boot.py
     strip_fill_color(led_strip, *DEFAULT_LED_STATE)
 
 

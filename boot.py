@@ -28,7 +28,7 @@ gc.collect()
 
 # webrepl.start()
 
-WIFI_SSID = "COVID-19_BOOSTER"
+WIFI_SSID = "Wireless Lab"
 WIFI_PWD = "manowawafli"
 
 led = machine.Pin(2, machine.Pin.OUT)  # blue led on your ESP32 board
