@@ -24,17 +24,23 @@ machine.freq(FREQUENCY)  # 240 MHz Frequency
 esp.osdebug(None)
 
 gc.collect()
-# import webrepl
 
-# webrepl.start()
+WIFI_SSID = os.getenv("WIFI_SSID")
+WIFI_PWD = os.getenv("WIFI_PWD")
 
-WIFI_SSID = "Wireless Lab"
-WIFI_PWD = "manowawafli"
+board_led_blue = machine.Pin(2, machine.Pin.OUT)  # blue led on your ESP32 board
 
-led = machine.Pin(2, machine.Pin.OUT)  # blue led on your ESP32 board
-led.value(1)  # turn in on
+if WIFI_SSID is not None or WIFI_PWD is not None:
+    board_led_blue.value(1)  # turn it on
+else:
+    print(
+        "ERROR: Cannot get .env vars:\n" +
+        "WIFI_SSID=" + str(WIFI_SSID) +
+        "WIFI_PWD=" + str(WIFI_PWD)
+    )
 
-LED_PIN = machine.Pin(5, machine.Pin.OUT)  # pin which your LED data wire connected to
+
+LED_PIN = machine.Pin(5, machine.Pin.OUT)  # pin which your LED data wire connected to. 5 = D5
 LED_STRIP_LEN = 430  # amount of LEDs on your strip
 
 DEFAULT_LED_STATE = (0, 0, 0, 255)  # default LED state is full white

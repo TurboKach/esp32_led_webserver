@@ -3,6 +3,12 @@ Note that some variables used in this file are defined in boot.py
 and both this files are read by ESP32 as one
 """
 
+# constants
+NOT_FOUND_TEMPLATE = '404.html'
+TEXT_HTML = 'text/html'
+TEXT_CSS = 'text/css'
+TEXT_JAVASCRIPT = 'text/javascript'
+
 
 def strip_clear(strip):
     """
@@ -66,7 +72,7 @@ def core_frequency_get():
     Retrieve set core frequency
     :return: string message with frequency in MHz
     """
-    frequency = str(machine.freq() / 10 ** 6)
+    frequency = str(machine.freq() / MHZ)
     return 'Core frequency: ' + frequency + ' MHz'
 
 
@@ -89,6 +95,7 @@ def wheel(pos):
     if pos < 0 or pos > 255:
         return 0, 0, 0, 0
     if pos < 85:
+        # TODO add incoming commands check while spinning rainbow wheel
         return 255 - pos * 3, pos * 3, 0, 0
     if pos < 170:
         pos -= 85
@@ -107,7 +114,7 @@ def rainbow_cycle(wait=0):
             time.sleep_ms(wait)  # change to remove sleep
 
 
-def create_response(connection, filename='404.html', content_type='text/html'):
+def create_response(connection, filename=NOT_FOUND_TEMPLATE, content_type=TEXT_HTML):
     response = get_file(filename)
     connection.send('HTTP/1.1 200 OK\n')  # TODO write a cycle to send response page
     connection.send('Content-Type: ' + content_type + '\n')
@@ -116,7 +123,7 @@ def create_response(connection, filename='404.html', content_type='text/html'):
     connection.close()
 
 
-def create_index_response(connection, filename='404.html', content_type='text/html'):
+def create_index_response(connection, filename=NOT_FOUND_TEMPLATE, content_type=TEXT_HTML):
     if led.value() == 1:
         gpio_state = "ON"
     else:
@@ -147,7 +154,7 @@ def get_file(filename):
         if filename not in filesystem:
             error = 'Error: ' + filename + ' file not found in root dir. Found: ' + filesystem
             print(error)
-            return error
+            return error  # TODO check it is safe to return a string instead of file
         file = open(filename)
         f = file.read()
         file.close()
@@ -178,7 +185,7 @@ def setup():
     :return: None
     """
     strip_clear(led_strip)
-    wifi_connect(WIFI_SSID, WIFI_PWD) # this files defined at boot.py
+    wifi_connect(WIFI_SSID, WIFI_PWD)  # this constants defined at boot.py
     strip_fill_color(led_strip, *DEFAULT_LED_STATE)
 
 
@@ -191,7 +198,7 @@ s.listen(5)
 
 setup()
 
-# ========= LOOP =========
+# ========= INFINITE LOOP =========
 while True:
     conn, addr = s.accept()
     print('Got a connection from %s' % str(addr))
@@ -208,17 +215,14 @@ while True:
         print('LED MEDIUM')
         led.value(1)
         strip_fill_color(led_strip, 0, 0, 0, 150)
-        # led_strip.write()
     if led_low == 6:
         print('LED LOW')
         led.value(1)
         strip_fill_color(led_strip, 0, 0, 0, 50)
-        # led_strip.write()
     if led_on == 6:
         print('LED ON')
         led.value(1)
         strip_fill_color(led_strip, 0, 0, 0, 255)
-        # led_strip.write()
     if led_off == 6:
         print('LED OFF')
         led.value(0)
@@ -228,18 +232,15 @@ while True:
         led.value(1)
         rainbow_cycle()
     # TODO add color picker function
-    # TODO keep .css and .js files on another server to reduce requests on ESP32
+    # TODO keep .css and .js files on external server to reduce requests on ESP32 (requires internet access)
     if request.find('GET /style.css', 2, 17) >= 0:
-        create_response(conn, 'style.css', 'text/css')
+        create_response(conn, 'style.css', TEXT_CSS)
     elif request.find('GET /functions.js', 2, 20) >= 0:
-        create_response(conn, 'functions.js', 'text/javascript')
+        create_response(conn, 'functions.js', TEXT_JAVASCRIPT)
     elif request.find('GET /?color=', 2, 19) >= 0:
         # TODO get colorsting into variable
         rgb = color_read(request)
 
         strip_fill_color(led_strip, *rgb)
 
-        create_index_response(conn, 'index.html', 'text/html')
-
-    else:
-        create_index_response(conn, 'index.html', 'text/html')
+    create_index_response(conn, 'index.html', TEXT_HTML)
